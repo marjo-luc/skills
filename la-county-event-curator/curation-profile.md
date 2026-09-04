@@ -11,6 +11,7 @@ The next calendar month, interpreted in the `America/Los_Angeles` time zone.
 ## High-interest categories
 
 - Museums and exhibitions
+- Art galleries
 - Science
 - Festivals
 - Talks and lectures
@@ -41,6 +42,9 @@ No standing exclusions have been specified.
 - Petersen Automotive Museum exhibits: https://petersen.org/pages/exhibits
 - Skirball Cultural Center exhibitions: https://www.skirball.org/museum/exhibitions
 - Visit Pasadena convention center calendar: https://www.visitpasadena.com/convention-center/full-event-calendar/
+- Sprüth Magers Upcoming Events: https://spruethmagers.com/exhibitions/upcoming/
+- Gagosian Upcoming Events: https://gagosian.com/exhibitions/upcoming/
+- Hauser & Wirth Forthcoming: https://www.hauserwirth.com/hauser-wirth-exhibitions/?date=forthcoming
 
 
 Search these sources first and give their verified events a ranking preference, while retaining broad public-web discovery for countywide coverage.
