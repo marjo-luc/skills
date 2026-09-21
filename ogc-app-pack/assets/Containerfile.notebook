@@ -1,0 +1,24 @@
+# Jupyter notebook entrypoint, executed via papermill.
+# COPY paths are relative to the REPO ROOT -- the Action builds with context: .
+FROM python:3.12-slim
+
+# requirements.txt must include papermill and ipykernel.
+COPY ./ALGORITHM_DIR/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt \
+    && python3 -m ipykernel install --name python3
+
+# Notebook and its entrypoint wrapper
+COPY ./ALGORITHM_DIR/NOTEBOOK.ipynb /app/NOTEBOOK.ipynb
+COPY ./ALGORITHM_DIR/run.py /usr/local/bin/run.py
+
+RUN chmod +x /usr/local/bin/run.py
+
+# run_command: run.py
+# The notebook needs a cell tagged `parameters` holding every input as a variable.
+#
+# For a GDAL/geospatial base instead, swap the FROM and add pip:
+#   FROM ghcr.io/osgeo/gdal:ubuntu-small-latest
+#   RUN apt-get update \
+#       && apt-get install -y --no-install-recommends python3-pip \
+#       && rm -rf /var/lib/apt/lists/*
+#   ... then pip install with --break-system-packages

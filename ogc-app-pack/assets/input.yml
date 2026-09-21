@@ -1,0 +1,14 @@
+# Sample CWL job file: cwltool <cwl> input.yml
+#
+# Primitives are plain scalars. File and Directory need a `class` plus either a
+# `path` (local, relative to this file) or a `location` (URI).
+input_param: some value
+output_file: output.txt
+
+# input_image:
+#   class: File
+#   path: sample.png
+#
+# input_catalog:
+#   class: Directory
+#   location: https://cmr.earthdata.nasa.gov/stac/.../items/...

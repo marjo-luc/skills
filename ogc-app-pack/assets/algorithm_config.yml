@@ -1,0 +1,44 @@
+# Input params for the OGC application package generator.
+# Every field below lands somewhere specific in the generated CWL --
+# see references/algorithm-config.md for the full mapping.
+
+# --- Identity (OGC req-9: id, label, abstract) ---
+algorithm_description: ONE_SENTENCE_DESCRIPTION_OF_WHAT_THIS_DOES
+algorithm_name: my-algorithm          # lowercase [a-z0-9._-]; becomes the CWL id, image name, and filename
+algorithm_version: main               # keep equal to the branch you push from
+keywords: ogc
+
+# --- Provenance ---
+code_repository: https://github.com/ORG/REPO.git
+citation: https://github.com/ORG/REPO.git
+author: GITHUB_USERNAME
+contributor: GITHUB_USERNAME
+license: https://raw.githubusercontent.com/ORG/REPO/refs/heads/main/LICENSE
+release_notes: None
+
+# --- Execution ---
+run_command: run.py                   # must be on PATH in the image, or an absolute path
+ram_min: 1                            # mebibytes -- minimum RAM; too low means an OOM kill
+cores_min: 1
+outdir_max: 1                         # mebibytes -- output dir cap; too low fails at the very end
+
+# Set this ONLY to reuse a pre-built image. Then write no Containerfile and
+# omit dockerfile-path from the Action.
+# algorithm_container_url: ghcr.io/org/image:tag
+
+# --- Inputs: each becomes `--<name> <value>` on the command line ---
+inputs:
+  - name: input_param                 # must match the algorithm's arg parser exactly
+    doc: What this parameter is, including units, format, and CRS if spatial
+    label: Short form-field name
+    type: string                      # string|int|long|float|double|boolean|File|Directory, `?` = optional
+  - name: output_file
+    doc: Name of the output file (written inside output/)
+    label: Output filename
+    type: string?
+    default: output.txt
+
+# --- Output: exactly one, always a Directory globbed from ./output* ---
+outputs:
+  - name: out
+    type: Directory
