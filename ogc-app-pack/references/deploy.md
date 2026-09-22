@@ -70,7 +70,13 @@ the register endpoint.
 
 Setup notes:
 
-- `MAAP_TOKEN` must exist as a repository secret (a MAAP PGT or JWT).
+- `MAAP_TOKEN` must exist as a repository secret (a MAAP PGT or JWT). Get the token from the MAAP
+  profile page — <https://console.maap-project.org/profile/tokens> for production, or the matching
+  console for UAT/DIT — and add it under *Settings → Secrets and variables → Actions → New
+  repository secret*, per
+  <https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets>.
+  `gh secret set MAAP_TOKEN --repo <org>/<repo>` does the same from a terminal without echoing the
+  value. Reference it only as `${{ secrets.MAAP_TOKEN }}`; never commit it to the workflow file.
 - Omit `dockerfile-path` when the config sets `algorithm_container_url`; supplying both is rejected.
 - If several algorithms live in one repo, give each its own workflow and add a
   `concurrency: {group: ogc-app-pack-deploy, cancel-in-progress: false}` block to a shared reusable

@@ -132,7 +132,7 @@ Users underestimate these. Ask for real numbers and explain the failure mode of 
 
 Ask what the algorithm's realistic peak memory and output size are, and pad both.
 
-## Round 6 — Deployment
+## Round 6 — Deployment and automation
 
 - **Which MAAP environment?** Production (`https://api.maap-project.org/api/ogc/processes`), UAT
   (`https://api.uat.maap-project.org/api/ogc/processes`), or DIT
@@ -144,12 +144,66 @@ Ask what the algorithm's realistic peak memory and output size are, and pad both
 
   > The actual registration happens in Phase 5, after the CWL validates — see SKILL.md, which also
   > covers resolving `MAAP_TOKEN` and asking for it when the environment doesn't have it.
-- **Via GitHub Actions (recommended) or locally?**
-  > *Why:* The Action builds the image, pushes to GHCR, commits the CWL with the real commit hash,
-  > and registers from a raw GitHub URL that MAAP can fetch. A local registration has to point at a
-  > CWL URL that is already reachable, so the Action path is both easier and more correct.
-- **If local:** confirm `MAAP_TOKEN` is available and `docker login ghcr.io` has been done. Then
-  follow `deploy.md` — and confirm with the user before pushing or registering.
+**Q: Set up the GitHub Action?** (Recommend yes — but explain what it turns on first.)
+
+> *Why recommended:* It is the supported path and the only one that gets the provenance right. On
+> each run it builds the image from the repo root, pushes it to GHCR, regenerates the CWL with the
+> commit hash of the code being built, commits that CWL back to the branch, and registers the
+> process from a raw GitHub URL that MAAP can fetch. Doing the same by hand means building with the
+> right platform, pushing, committing, pinning a raw URL to a SHA, and POSTing — each a place to get
+> it wrong.
+
+> *What it turns on — say this before they agree:* once the workflow is in place, **every push to
+> the branch it watches that touches the algorithm's files rebuilds and redeploys automatically**.
+> No prompt, no separate approval, no chance to review between the merge and the deployment. Since
+> registration is an upsert, each such push overwrites the live process of that name. That is the
+> point of it, and it is also the reason to be deliberate about which branch.
+
+**Q: Which branch should it watch?** Ask outright; don't assume `main`.
+
+> *Why:* It goes in `on.push.branches` and in the `paths` filter. It also decides what gets built:
+> the Action derives the image tag and the CWL filename from `GITHUB_REF_NAME`, so a workflow
+> watching `develop` produces `...:develop` and `process_<name>_develop.cwl`. **Keep
+> `algorithm_version` equal to that branch** — otherwise the CWL claims a version that isn't the one
+> built. A feature branch is the low-risk place to watch it work before pointing it at `main`.
+
+Setup requirements, all of which the user has to do — state them rather than discovering them in a
+red CI run:
+
+- `secrets.MAAP_TOKEN` on the repository, valid for the endpoint chosen above (a UAT token 401s
+  against production). **Walk the user through this — only when they are setting up the Action**,
+  since it is the Action that reads the secret; a purely local registration uses `$MAAP_TOKEN` in
+  their own shell instead:
+
+  1. **Get the token** from their MAAP profile:
+     <https://console.maap-project.org/profile/tokens>. That console issues production tokens — for
+     UAT or DIT, use that environment's own console, because a token only works against the
+     environment that issued it.
+  2. **Add it as a repository secret** named exactly `MAAP_TOKEN`, following GitHub's guide:
+     <https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets>.
+     In the UI that is *Settings → Secrets and variables → Actions → New repository secret*. Or, from
+     the terminal, they run it themselves so the value never enters the transcript:
+     ```bash
+     ! gh secret set MAAP_TOKEN --repo <org>/<repo>     # prompts for the value, echoes nothing
+     ```
+  3. **Never hardcode the token in the workflow file** — it is referenced as
+     `${{ secrets.MAAP_TOKEN }}` and nothing else. A token committed to the repo is a leaked
+     credential, and the workflow YAML is as public as the repo.
+
+  The secret is per-repository, so a fork or a second repo needs its own. When the Action starts
+  failing at the register step with 401/403 and nothing else changed, the token expired — reissue it
+  from the same profile page and update the secret.
+- `permissions: contents: write` (the Action commits the CWL) and `packages: write` (it pushes to
+  GHCR) — both are in `assets/github-workflow.yml`.
+- The GHCR package is private on first push; MAAP cannot pull it until it is made public.
+- `deploy-app-pack: false` is the middle setting: the Action still builds, pushes, generates,
+  validates and commits the CWL, but registers nothing. Offer it to anyone who wants the automation
+  without automatic publication.
+
+**Q (if they decline the Action): register locally instead?** Confirm `MAAP_TOKEN` is available and
+`docker login ghcr.io` has been done, then follow `deploy.md` — and confirm before pushing or
+registering. Note that the local route needs `--platform linux/amd64` on Apple Silicon, which the
+Action gets for free by running on `ubuntu-latest`.
 
 ## Round 7 — Which scaffold files to keep
 

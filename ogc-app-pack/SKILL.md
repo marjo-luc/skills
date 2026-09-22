@@ -70,10 +70,10 @@ Write into the algorithm's directory. Templates are in `assets/`; pick the conta
 | `Containerfile` | Builds the image. Patterns: `references/containers.md` | **Ask** — see below |
 | `run.py` | Only for notebooks — the papermill shim mapping `--flags` to parameters | Notebooks only |
 | `input.yml` | Sample CWL job file so the workflow can be test-run locally | **Ask** — see below |
-| `.github/workflows/<algorithm-name>.yml` | Triggers the Action on push | When deploying via the Action |
+| `.github/workflows/<algorithm-name>.yml` | Triggers the Action on push | **Ask** — recommended, see below |
 
-**Three of these are the user's call — ask, batched with the Phase 1 questions.** Rounds 1 and 7 of
-`references/interview.md` have the full framing; the short version:
+**Four of these are the user's call — ask, batched with the Phase 1 questions.** Rounds 1, 6 and 7
+of `references/interview.md` have the full framing; the short version:
 
 - **`Containerfile` — write one, or point at a pre-built image?** Exactly one of the two is
   required: `validate_inputs.py` aborts with `algorithm_container_url or dockerfile-path must be
@@ -91,6 +91,18 @@ Write into the algorithm's directory. Templates are in `assets/`; pick the conta
   `cwltool <cwl> input.yml` instead of retyping `--text ... --output_file ...`. Nothing on MAAP reads
   it and the Action never touches it. Recommend it whenever a local test-run is plausible; if they
   decline, test-run with inline flags.
+- **`.github/workflows/<algorithm-name>.yml` — set up the GitHub Action? (Recommend yes.)** Explain
+  what it turns on before they agree: from then on, **every push to the branch it watches that
+  touches the algorithm's files automatically rebuilds the image, pushes it to GHCR, regenerates and
+  commits the CWL, and re-registers the process with MAAP** — no manual step, and no separate
+  approval each time. That is why it is recommended (it is the supported path, and the only one that
+  stamps `s:commitHash` with the commit being built) and also what to be deliberate about: each
+  merge overwrites the live process of that name, since registration is an upsert. Ask **which
+  branch** it should watch, and keep `algorithm_version` equal to it. If they say yes, walk them
+  through getting a token from <https://console.maap-project.org/profile/tokens> and adding it as
+  the repository secret `MAAP_TOKEN` — the Action cannot register without it, and that walkthrough
+  belongs to this path only; a local-only user sets `$MAAP_TOKEN` in their shell instead. Round 6 of
+  `references/interview.md` has the full framing, the steps, and the links.
 
 ### Phase 3 — Generate the CWL
 
