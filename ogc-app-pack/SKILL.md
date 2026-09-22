@@ -99,9 +99,11 @@ of `references/interview.md` have the full framing; the short version:
   stamps `s:commitHash` with the commit being built) and also what to be deliberate about: each
   merge overwrites the live process of that name, since registration is an upsert. Ask **which
   branch** it should watch, and keep `algorithm_version` equal to it. If they say yes, walk them
-  through getting a token from <https://console.maap-project.org/profile/tokens> and adding it as
-  the repository secret `MAAP_TOKEN` — the Action cannot register without it, and that walkthrough
-  belongs to this path only; a local-only user sets `$MAAP_TOKEN` in their shell instead. Round 6 of
+  through getting a token from the profile page of the environment they are deploying to
+  (<https://console.maap-project.org/profile/tokens> for production,
+  <https://console.uat.maap-project.org/profile/tokens> for UAT) and adding it as the repository
+  secret `MAAP_TOKEN` — the Action cannot register without it, and that walkthrough belongs to this
+  path only; a local-only user sets `$MAAP_TOKEN` in their shell instead. Round 6 of
   `references/interview.md` has the full framing, the steps, and the links.
 
 ### Phase 3 — Generate the CWL
@@ -243,11 +245,14 @@ upsert, and prints `processPipelineLink` for watching deployment. The token reac
 mode-600 config file, so it never enters argv or shell history. **Do a `--dry-run` first and show the
 user what will be submitted.**
 
-| Environment | Endpoint |
-|---|---|
-| Production | `https://api.maap-project.org/api/ogc/processes` (script default) |
-| UAT | `https://api.uat.maap-project.org/api/ogc/processes` |
-| DIT | `https://api.dit.maap-project.org/api/ogc/processes` |
+| Environment | Register endpoint | Token from |
+|---|---|---|
+| Production | `https://api.maap-project.org/api/ogc/processes` (script default) | <https://console.maap-project.org/profile/tokens> |
+| UAT | `https://api.uat.maap-project.org/api/ogc/processes` | <https://console.uat.maap-project.org/profile/tokens> |
+| DIT | `https://api.dit.maap-project.org/api/ogc/processes` | The DIT console's profile page — ask, don't guess |
+
+Take the token from the same row as the endpoint. A token issued by one environment 401s against
+another, which is the usual reason a run that built cleanly dies at the register step.
 
 Building and pushing the image is the other half of this phase; `references/deploy.md` has the GHCR
 push and the `--platform linux/amd64` requirement. **Confirm before pushing an image too.**

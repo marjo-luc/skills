@@ -175,10 +175,18 @@ red CI run:
   since it is the Action that reads the secret; a purely local registration uses `$MAAP_TOKEN` in
   their own shell instead:
 
-  1. **Get the token** from their MAAP profile:
-     <https://console.maap-project.org/profile/tokens>. That console issues production tokens — for
-     UAT or DIT, use that environment's own console, because a token only works against the
-     environment that issued it.
+  1. **Get the token** from the MAAP profile page **of the environment they are deploying to** — a
+     token only works against the environment that issued it, so this has to match the
+     `app-pack-register-endpoint` chosen above:
+
+     | Deploying to | Get the token from |
+     |---|---|
+     | Production (`api.maap-project.org`) | <https://console.maap-project.org/profile/tokens> |
+     | UAT (`api.uat.maap-project.org`) | <https://console.uat.maap-project.org/profile/tokens> |
+     | DIT (`api.dit.maap-project.org`) | The DIT console's own profile page — ask the user for it rather than guessing the host |
+
+     Getting this pair wrong is the common cause of a green build that fails at the register step
+     with 401/403.
   2. **Add it as a repository secret** named exactly `MAAP_TOKEN`, following GitHub's guide:
      <https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets>.
      In the UI that is *Settings → Secrets and variables → Actions → New repository secret*. Or, from

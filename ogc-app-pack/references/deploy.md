@@ -70,9 +70,11 @@ the register endpoint.
 
 Setup notes:
 
-- `MAAP_TOKEN` must exist as a repository secret (a MAAP PGT or JWT). Get the token from the MAAP
-  profile page — <https://console.maap-project.org/profile/tokens> for production, or the matching
-  console for UAT/DIT — and add it under *Settings → Secrets and variables → Actions → New
+- `MAAP_TOKEN` must exist as a repository secret (a MAAP PGT or JWT). Get the token from the profile
+  page of the environment being deployed to — production
+  <https://console.maap-project.org/profile/tokens>, UAT
+  <https://console.uat.maap-project.org/profile/tokens> — and add it under *Settings → Secrets and
+  variables → Actions → New
   repository secret*, per
   <https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets>.
   `gh secret set MAAP_TOKEN --repo <org>/<repo>` does the same from a terminal without echoing the
@@ -167,11 +169,14 @@ carries a `processPipelineLink.href` for watching deployment status.
 
 ### Endpoints
 
-| Environment | Endpoint |
-|---|---|
-| Production | `https://api.maap-project.org/api/ogc/processes` |
-| UAT | `https://api.uat.maap-project.org/api/ogc/processes` |
-| DIT | `https://api.dit.maap-project.org/api/ogc/processes` |
+| Environment | Register endpoint | Token from |
+|---|---|---|
+| Production | `https://api.maap-project.org/api/ogc/processes` | <https://console.maap-project.org/profile/tokens> |
+| UAT | `https://api.uat.maap-project.org/api/ogc/processes` | <https://console.uat.maap-project.org/profile/tokens> |
+| DIT | `https://api.dit.maap-project.org/api/ogc/processes` | The DIT console's profile page — ask, don't guess the host |
+
+The token has to come from the same row as the endpoint; a token from one environment 401s against
+another.
 
 Registering in UAT or DIT first, and confirming the process runs there, is the low-risk order —
 production registration overwrites the live process of that name. Follow the user's choice of
