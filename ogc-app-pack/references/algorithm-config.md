@@ -79,13 +79,20 @@ Defaults for primitive types are written through as-is.
 
 ## `outputs`
 
-Exactly one entry, `type: Directory`:
+Exactly one entry, `type: Directory`, **with a `name` that starts with `out`**:
 
 ```yaml
 outputs:
-  - name: out
+  - name: out             # must start with "out" — out, outputs, out_dir all work
     type: Directory
 ```
+
+The `name` becomes the workflow-level output ID in the CWL (`$graph[0].outputs.<name>`). MAAP
+relies on that ID starting with `out` to recognize the directory as the job's results and mount it
+into the user's bucket. A name like `result` or `products` generates, passes `cwltool` and
+`ap-validator`, and runs — but the results don't land in the user's bucket. Neither the generator
+nor the validators check this, so check it yourself whenever you write or review a config. `out`
+is the safe default.
 
 The generator ignores everything but `name` and `type`, and hardcodes the tool-level output to:
 

@@ -44,6 +44,19 @@ works until the next push, when the Action regenerates and commits over it.
 | `Duplicate input parameter name 'x'` (ValueError, generation aborts) | Two inputs share a `name` | Rename one |
 | `invalid field 'type', expected one of ...` | Unsupported CWL type string | Use a type from the table in `algorithm-config.md` |
 
+### What the validators don't catch
+
+**The output name.** The workflow-level output ID (from the config's `outputs[0].name`) must start
+with `out`, or MAAP won't mount the results into the user's bucket. Both validators pass either way,
+so check the generated CWL directly:
+
+```bash
+grep -A3 '^    outputs:' my_algo/cwl_workflows/process_<name>_<branch>.cwl | head -4
+```
+
+The first key under the Workflow's `outputs:` should be `out` (or another `out…` name). If not, fix
+`outputs[0].name` in `algorithm_config.yml` and regenerate.
+
 Check the generator's stderr too: it logs `Expected key 'x' not found in algorithm config.` for
 every missing top-level key, which usually explains a validator failure before the validator runs.
 

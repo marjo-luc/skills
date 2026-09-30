@@ -44,8 +44,11 @@ before writing anything.
    `name: input_image` means the code must parse `--input_image`.
 2. **The algorithm must write into `./output/` relative to its working directory.** The tool-level
    output globs `./output*` and returns it as a `Directory`. Anything written elsewhere is lost.
-3. **Define exactly one output, `type: Directory`.** The generator hardcodes the tool output to a
-   single `outputs_result` globbing `./output*`; a second output silently overwrites the first.
+3. **Define exactly one output, `type: Directory`, whose `name` starts with `out`** (`out` is the
+   default). The name becomes the CWL workflow's output ID, and MAAP uses the `out` prefix to mount
+   the results into the user's bucket — any other name validates and runs, but the results never
+   reach the bucket. The generator hardcodes the tool output to a single `outputs_result` globbing
+   `./output*`; a second output silently overwrites the first.
 4. **`run_command` must be executable and resolvable** — either on `PATH` inside the image
    (the usual move: `COPY ... /usr/local/bin/x` + `RUN chmod +x`) or an absolute path.
 5. **`Containerfile` `COPY` paths are relative to the repo root**, not the algorithm directory,

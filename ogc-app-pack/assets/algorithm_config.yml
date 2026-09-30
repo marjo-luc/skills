@@ -39,6 +39,8 @@ inputs:
     default: output.txt
 
 # --- Output: exactly one, always a Directory globbed from ./output* ---
+# The name MUST start with "out": MAAP uses it to mount the results into the
+# user's bucket. Nothing validates this -- any other name loses the results.
 outputs:
   - name: out
     type: Directory

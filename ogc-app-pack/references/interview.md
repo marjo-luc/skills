@@ -152,6 +152,10 @@ Mostly a confirmation, not a question — the generator supports exactly one out
 >
 > **Notes:** The tool-level output is hardcoded to glob `./output*` as a `Directory`, and the
 > workflow output sources from it. Writing to `/tmp`, an absolute path, or `~` loses the results.
+> The config's output `name` must start with `out` (use `out`) — MAAP relies on it to mount the
+> results into the user's bucket. Don't ask the user to name it; set it. If an existing config
+> uses another name, rename it and tell them why: "I renamed the output to `out` — MAAP needs the
+> name to start with 'out' to put your results in your storage bucket."
 
 If the algorithm doesn't do this, fix the algorithm (add `os.makedirs("output", exist_ok=True)` and
 join paths against it). There is no way to work around it in the config.
