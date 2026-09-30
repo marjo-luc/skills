@@ -58,7 +58,7 @@ jobs:
           dockerfile-path: my_algo/Containerfile
           cwl-workflow-dir: my_algo/cwl_workflows
           deploy-app-pack: true
-          app-pack-register-endpoint: https://api.uat.maap-project.org/api/ogc/processes
+          app-pack-register-endpoint: https://api.maap-project.org/api/ogc/processes
         env:
           MAAP_TOKEN: ${{ secrets.MAAP_TOKEN }}
 ```
@@ -171,16 +171,17 @@ carries a `processPipelineLink.href` for watching deployment status.
 
 | Environment | Register endpoint | Token from |
 |---|---|---|
-| Production | `https://api.maap-project.org/api/ogc/processes` | <https://console.maap-project.org/profile/tokens> |
-| UAT | `https://api.uat.maap-project.org/api/ogc/processes` | <https://console.uat.maap-project.org/profile/tokens> |
+| Production (default) | `https://api.maap-project.org/api/ogc/processes` | <https://console.maap-project.org/profile/tokens> |
+| UAT (secondary) | `https://api.uat.maap-project.org/api/ogc/processes` | <https://console.uat.maap-project.org/profile/tokens> |
 | DIT | `https://api.dit.maap-project.org/api/ogc/processes` | The DIT console's profile page — ask, don't guess the host |
 
 The token has to come from the same row as the endpoint; a token from one environment 401s against
 another.
 
-Registering in UAT or DIT first, and confirming the process runs there, is the low-risk order —
-production registration overwrites the live process of that name. Follow the user's choice of
-environment; mention the order once if they go straight to production.
+Production is the default target. UAT is the secondary option, for a user who wants to try the
+process out before it is published where others will use it — offer it once, then follow the
+user's choice. Either way, registration overwrites the process of that name in the chosen
+environment.
 
 ## Troubleshooting
 

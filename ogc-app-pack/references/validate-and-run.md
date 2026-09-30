@@ -66,7 +66,7 @@ build and tag it locally to match, or temporarily point `algorithm_container_url
 exists. For a local build matching the derived tag:
 
 ```bash
-docker build -f my_algo/Containerfile -t "$(scripts/generate_cwl.py --config-file my_algo/algorithm_config.yml --print-docker-tag)" .
+docker build -f my_algo/Containerfile -t "$(~/.claude/skills/ogc-app-pack/scripts/generate_cwl.py --config-file my_algo/algorithm_config.yml --print-docker-tag)" .
 ```
 
 Note the trailing `.` — the build context is the repo root, matching CI.
